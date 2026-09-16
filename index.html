@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quiz Rush — Maths & GK</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#07111f,#111a36);color:#f7f9ff;font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;padding:20px}
+.app{width:min(850px,100%);background:rgba(11,19,39,.96);border:1px solid #2a3c67;border-radius:24px;padding:28px;box-shadow:0 25px 80px #0008}
+h1,h2{margin:0 0 10px}.title{font-size:clamp(34px,7vw,58px);color:#67f0cb}.sub{color:#aab7d2;margin-bottom:24px}.hidden{display:none}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}.mode{padding:20px;border:1px solid #334a78;border-radius:16px;background:#101c36;color:#fff;cursor:pointer;text-align:left}.mode:hover{border-color:#67f0cb;transform:translateY(-2px)}.mode b{display:block;font-size:20px;margin-bottom:6px}.mode span{color:#9eacc7;font-size:13px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}.pill{background:#111f3b;border:1px solid #293d68;padding:9px 13px;border-radius:12px;font-weight:bold}
+.bar{height:8px;background:#172642;border-radius:9px;overflow:hidden;margin:15px 0 25px}.fill{height:100%;width:0;background:#67f0cb;transition:.3s}
+.question{font-size:28px;line-height:1.3;margin:20px 0}.options{display:grid;grid-template-columns:1fr 1fr;gap:12px}.opt{padding:16px;border:1px solid #344b78;border-radius:13px;background:#101c35;color:#fff;text-align:left;font-size:16px;cursor:pointer}.opt:hover{border-color:#67f0cb}.opt.correct{background:#164e42;border-color:#67f0cb}.opt.wrong{background:#56213a;border-color:#ff6b8a}.opt:disabled{cursor:default}
+button.action{border:0;border-radius:12px;padding:13px 20px;background:#67f0cb;color:#061510;font-weight:bold;font-size:16px;cursor:pointer;margin-top:20px}
+.center{text-align:center}.score{font-size:48px;color:#67f0cb;margin:15px 0}.small{color:#9eacc7}
+@media(max-width:600px){.modes{grid-template-columns:1fr}.options{grid-template-columns:1fr}.app{padding:20px}.question{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="app">
+<section id="home">
+<h1 class="title">QUIZ RUSH</h1>
+<p class="sub">Maths + General Knowledge • Choose your difficulty and test your brain.</p>
+<h2>Mode चुनो</h2>
+<div class="modes">
+<button class="mode" data-mode="easy"><b>🟢 Easy</b><span>Basic questions • 15 sec</span></button>
+<button class="mode" data-mode="medium"><b>🟡 Medium</b><span>Mixed questions • 12 sec</span></button>
+<button class="mode" data-mode="hard"><b>🔴 Hard</b><span>Tricky questions • 9 sec</span></button>
+</div>
+<p class="small">हर सही जवाब = +10 points • लगातार सही जवाब पर streak bonus</p>
+</section>
+
+<section id="quiz" class="hidden">
+<div class="stats"><div class="pill">⭐ Score: <span id="score">0</span></div><div class="pill">🔥 Streak: <span id="streak">0</span></div><div class="pill">❓ <span id="num">1</span>/10</div><div class="pill">⏱️ <span id="time">15</span>s</div></div>
+<div class="bar"><div class="fill" id="fill"></div></div>
+<div class="small" id="category">Maths</div>
+<div class="question" id="question"></div>
+<div class="options" id="options"></div>
+</section>
+
+<section id="result" class="hidden center">
+<h1>🎉 Quiz Complete!</h1>
+<div class="score" id="finalScore">0</div>
+<p id="resultText"></p>
+<p class="small" id="best"></p>
+<button class="action" id="again">Play Again</button>
+</section>
+</div>
+
+<script>
+const bank={
+easy:[
+["Maths","12 + 8 = ?",["18","20","22","24"],1],["Maths","9 × 7 = ?",["56","63","72","49"],1],
+["Maths","50 का 10% कितना है?",["5","10","15","20"],0],["GK","भारत की राजधानी क्या है?",["मुंबई","जयपुर","नई दिल्ली","कोलकाता"],2],
+["GK","भारत का राष्ट्रीय पशु कौन है?",["शेर","बाघ","हाथी","मोर"],1],["GK","सूर्य के सबसे नज़दीक ग्रह कौन सा है?",["पृथ्वी","शुक्र","बुध","मंगल"],2],
+["Maths","100 ÷ 4 = ?",["20","25","30","40"],1],["GK","इंद्रधनुष में सामान्यतः कितने रंग माने जाते हैं?",["5","6","7","8"],2],
+["Maths","एक दर्जन में कितनी वस्तुएँ होती हैं?",["10","12","14","16"],1],["GK","भारत का राष्ट्रीय पक्षी कौन है?",["मोर","तोता","कबूतर","हंस"],0]
+],
+medium:[
+["Maths","15 × 12 = ?",["160","170","180","190"],2],["Maths","144 का वर्गमूल क्या है?",["10","11","12","14"],2],
+["Maths","3/4 का 80 कितना है?",["50","60","70","75"],1],["GK","भारतीय संविधान कब अपनाया गया था?",["15 Aug 1947","26 Nov 1949","26 Jan 1950","2 Oct 1950"],1],
+["GK","पृथ्वी का प्राकृतिक उपग्रह कौन है?",["सूर्य","चंद्रमा","मंगल","शुक्र"],1],["Maths","एक त्रिभुज के कोणों का योग कितना होता है?",["90°","180°","270°","360°"],1],
+["GK","जल का रासायनिक सूत्र क्या है?",["CO₂","O₂","H₂O","NaCl"],2],["Maths","2⁵ = ?",["10","16","25","32"],3],
+["GK","भारत में कितने राज्य हैं? (2026)",["26","28","29","30"],1],["Maths","यदि x + 7 = 19, तो x = ?",["10","11","12","13"],2]
+],
+hard:[
+["Maths","यदि 2x + 5 = 17, x = ?",["5","6","7","8"],1],["Maths","√625 = ?",["15","20","25","30"],2],
+["Maths","एक संख्या का 20% = 36 है। संख्या क्या है?",["120","150","180","200"],2],["GK","भारत का पहला उपग्रह कौन सा था?",["आर्यभट्ट","रोहिणी","भास्कर","INSAT-1A"],0],
+["Maths","(18 ÷ 3)² + 4 = ?",["36","40","42","46"],1],["GK","प्रकाश की निर्वात में गति लगभग कितनी है?",["3×10⁶ m/s","3×10⁷ m/s","3×10⁸ m/s","3×10⁹ m/s"],2],
+["Maths","यदि अनुपात 3:5 है और कुल 64 है, पहला भाग?",["18","21","24","30"],2],["GK","विश्व का सबसे बड़ा महासागर कौन सा है?",["अटलांटिक","हिंद महासागर","प्रशांत","आर्कटिक"],2],
+["Maths","5, 10, 20, 40, ?","[""60"",""70"",""80"",""90""],2],["GK","DNA का पूरा नाम क्या है?",["Deoxyribonucleic Acid","Dynamic Nuclear Acid","Double Nitrogen Atom","Deoxygenated Nucleic Acid"],0]
+]};
+let mode,questions=[],idx=0,score=0,streak=0,timer,t=15;
+const $=id=>document.getElementById(id);
+document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>start(b.dataset.mode));
+function start(m){mode=m;questions=[...bank[m]].sort(()=>Math.random()-.5).slice(0,10);idx=0;score=0;streak=0;$("home").classList.add("hidden");$("result").classList.add("hidden");$("quiz").classList.remove("hidden");show()}
+function show(){clearInterval(timer);const q=questions[idx];t=mode==="easy"?15:mode==="medium"?12:9;$("time").textContent=t;$("num").textContent=idx+1;$("score").textContent=score;$("streak").textContent=streak;$("fill").style.width=(idx/10*100)+"%";$("category").textContent=q[0];$("question").textContent=q[1];$("options").innerHTML="";
+q[2].forEach((x,i)=>{let b=document.createElement("button");b.className="opt";b.textContent=x;b.onclick=()=>answer(i,b);$("options").appendChild(b)});timer=setInterval(()=>{t--;$("time").textContent=t;if(t<=0){clearInterval(timer);answer(-1,null)}},1000)}
+function answer(choice,btn){clearInterval(timer);let q=questions[idx],buttons=[...document.querySelectorAll(".opt")];buttons.forEach(b=>b.disabled=true);if(choice===q[3]){score+=10+streak*2;streak++;if(btn)btn.classList.add("correct")}else{streak=0;if(btn)btn.classList.add("wrong");buttons[q[3]].classList.add("correct")}setTimeout(()=>{idx++;if(idx>=questions.length)finish();else show()},650)}
+function finish(){clearInterval(timer);$("quiz").classList.add("hidden");$("result").classList.remove("hidden");$("finalScore").textContent=score+" POINTS";$("resultText").textContent=`Mode: ${mode.toUpperCase()} • ${questions.length} questions complete`;let old=+localStorage.getItem("quizBest")||0;if(score>old){localStorage.setItem("quizBest",score);$("best").textContent="🏆 नया Best Score!";}else $("best").textContent="🏆 Best Score: "+old}
+$("again").onclick=()=>{$("result").classList.add("hidden");$("home").classList.remove("hidden")}
+</script>
+</body>
+</html>
